@@ -1,61 +1,56 @@
-# If you come from bash you might have to change your $PATH.
-export PATH=$HOME/bin:/usr/local/bin:$PATH
 
-# Path to your oh-my-zsh installation.
-export ZSH=/Users/collierl/.oh-my-zsh
+# Local bin on path
+export PATH=/Users/lukecollier/.local/bin:$PATH
 
-# Set's the zsh theme to agnoster
-export TERM='screen-256color'
+# terminal prompt
+eval "$(starship init zsh)"
 
-# Elite hackor vim mode
-bindkey -v
-
-# Sources zsh
-source $ZSH/oh-my-zsh.sh
-
-# Add's auto suggestions and auto jump
+# Autojump
 [ -f /usr/local/etc/profile.d/autojump.sh ] && . /usr/local/etc/profile.d/autojump.sh
 
-# Set the default edtior
-export EDITOR="nvim"
+# Vi mode
+bindkey '^P' up-history
+bindkey '^N' down-history
+bindkey '^?' backward-delete-char
+bindkey '^h' backward-delete-char
+bindkey '^w' backward-kill-word
+bindkey '^r' history-incremental-search-backward
+bindkey -v
+export KEYTIMEOUT=1
 
-# Set maven home
-export M2_HOME="/Users/collierl"
+# Vi mode
+HISTFILE=~/.zsh_history
+HISTSIZE=1000000
+SAVEHIST=$HISTSIZE
+setopt hist_ignore_all_dups
+setopt hist_ignore_space
+setopt SHARE_HISTORY
 
-# Cargo path
-export PATH="$HOME/.cargo/bin:$PATH"
+export VISUAL=nvim
+export EDITOR=nvim
 
-# Fuzzy search
+export DOCKER_OPTS="${DOCKER_OPTS} --insecure-registry weaponx-docker.artifactory.us-east-1.bamgrid.net"
+
+# file browser setup
+export NNN_PLUG='o:fzopen;d:diffs;n:notes;j:autojump'
+
+alias nnn="nnn -E"
+alias ls="lsd"
+alias utcdate='date -u +"%Y-%m-%dT%H:%M:%SZ"'
+
+eval "`fnm env`"
+
+# # Feed the output of fd into fzf
+# fd --type f | fzf
+
+# Setting fd as the default source for fzf
+export FZF_DEFAULT_COMMAND='fd --type file --follow --hidden --exclude .git --color=always'
+export FZF_DEFAULT_OPTS="--ansi"
+
+# To apply the command to CTRL-T as well
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# tabtab source for yarn package
-export ZPLUG_HOME=/usr/local/opt/zplug
-source $ZPLUG_HOME/init.zsh
-
-zplug "zsh-users/zsh-autosuggestions"
-
-# Supports oh-my-zsh plugins and the like
-zplug 'LukeCollier/zsh-theme', as:theme
-zplug "plugins/git",   from:oh-my-zsh
-zplug "plugins/osx",   from:oh-my-zsh
-zplug "plugins/zsh-256color",   from:oh-my-zsh
-zplug "g-plane/zsh-yarn-autocompletions", hook-build:"./zplug.zsh", defer:2
-zplug "zsh-users/zsh-syntax-highlighting", defer:2
-
-# Install plugins if there are plugins that have not been installed
-if ! zplug check --verbose; then
-    printf "Install? [y/N]: "
-    if read -q; then
-        echo; zplug install
-    fi
-fi
-
-# Then, source plugins and add commands to $PATH
-zplug load # --verbose
-
-ZSH_THEME="collier"
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
-[ -s "/usr/local/opt/nvm/etc/bash_completion" ] && . "/usr/local/opt/nvm/etc/bash_completion"  # This loads nvm bash_completion
-
+# Start tmux if it's not already running
+if [ "$TMUX" = "" ]; then tmux; fi
