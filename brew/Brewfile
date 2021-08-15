@@ -1,0 +1,10 @@
+tap "homebrew/cask-fonts"
+brew "font-jetbrains-mono-nerd-font"
+brew "neovim"
+brew "tmux"
+brew "yarn"
+brew "fzf"
+brew "coursier"
+brew "autojump"
+brew "nnn"
+
