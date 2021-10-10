@@ -2,9 +2,6 @@
 # Local bin on path
 export PATH=/Users/lukecollier/.local/bin:$PATH
 
-# terminal prompt
-eval "$(starship init zsh)"
-
 # Autojump
 [ -f /usr/local/etc/profile.d/autojump.sh ] && . /usr/local/etc/profile.d/autojump.sh
 
@@ -29,13 +26,11 @@ setopt SHARE_HISTORY
 export VISUAL=nvim
 export EDITOR=nvim
 
-export DOCKER_OPTS="${DOCKER_OPTS} --insecure-registry weaponx-docker.artifactory.us-east-1.bamgrid.net"
-
 # file browser setup
-export NNN_PLUG='o:fzopen;d:diffs;n:notes;j:autojump'
+export NNN_PLUG='o:fzopen;d:diffs;n:notes;'
 
 alias nnn="nnn -E"
-alias ls="lsd"
+alias ls="exa"
 alias utcdate='date -u +"%Y-%m-%dT%H:%M:%SZ"'
 
 eval "`fnm env`"
@@ -52,5 +47,8 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# Start tmux if it's not already running
-if [ "$TMUX" = "" ]; then tmux; fi
+# install zoxide
+eval "$(zoxide init zsh)"
+
+# terminal prompt
+eval "$(starship init zsh)"

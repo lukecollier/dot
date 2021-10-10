@@ -293,5 +293,3 @@ let g:table_mode_corner='|'
 " Show tabs
 set list
 set listchars=tab:>-
-
-let g:github_enterprise_urls = ['https://github.bamtech.co']
