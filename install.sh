@@ -14,6 +14,13 @@ else
   brew bundle --file ./Brewfile
 fi  
 
+coursier bootstrap \
+  --java-opt -XX:+UseG1GC \
+  --java-opt -XX:+UseStringDeduplication  \
+  --java-opt -Xss4m \
+  --java-opt -Xms100m \
+  org.scalameta:metals_2.12:0.11.2+177-fb896d65-SNAPSHOT -o metals -f
+
 cp -p ./alacritty/alacritty.yml ~/.config/alacritty/alacritty.yml
 cp -p ./neovim/init.vim ~/.config/nvim/init.vim
 cp -p ./zsh/zshrc ~/.zshrc
