@@ -1,9 +1,5 @@
-
-# Local bin on path
-export PATH=/Users/lukecollier/.local/bin:$PATH
-
-# Autojump
-[ -f /usr/local/etc/profile.d/autojump.sh ] && . /usr/local/etc/profile.d/autojump.sh
+export PATH=/bin:/usr/bin:/usr/local/bin:${PATH}
+eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # Vi mode
 bindkey '^P' up-history

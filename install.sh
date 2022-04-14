@@ -8,7 +8,11 @@ else
     echo "brew installed skipping"
 fi
 
-arch -arm64 brew bundle --file ./Brewfile
+if [[ $(uname -m) == 'arm64' ]]; then
+  arch -arm64 brew bundle --file ./Brewfile
+else
+  brew bundle --file ./Brewfile
+fi  
 
 cp -p ./alacritty/alacritty.yml ~/.config/alacritty/alacritty.yml
 cp -p ./neovim/init.vim ~/.config/nvim/init.vim
@@ -24,4 +28,5 @@ git config --global alias.co checkout
 git config --global alias.br branch
 git config --global alias.ci commit
 git config --global alias.st status
+git config --global alias.a add
 echo "setting up git alias"

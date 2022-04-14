@@ -144,4 +144,5 @@ debug:
 
 vim: nospell
 
-
+shell: 
+  program: /bin/zsh
