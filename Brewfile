@@ -28,6 +28,7 @@ brew "websocat"
 brew "yarn"
 brew "zoxide"
 brew "zsh"
+brew "reattach-to-user-namespace"
 brew "coursier/formulas/coursier"
 brew "koekeishiya/formulae/yabai", args: ["HEAD"]
 cask "font-jetbrains-mono-nerd-font"
