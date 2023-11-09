@@ -36,6 +36,18 @@ vim.keymap.set("n", "<right>", function() vim.cmd("tabp") end)
 
 require("lazy").setup({
   {
+    {
+      'tanvirtin/vgit.nvim',
+      dependencies = {
+        'nvim-lua/plenary.nvim'
+      },
+      config = function()
+        vim.o.updatetime = 300
+        vim.o.incsearch = false
+        vim.wo.signcolumn = 'yes'
+        require('vgit').setup()
+      end
+    },
     'christoomey/vim-tmux-navigator',
     'roxma/vim-tmux-clipboard',
     'tmux-plugins/vim-tmux-focus-events',
