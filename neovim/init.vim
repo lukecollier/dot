@@ -42,12 +42,12 @@ Plug 'tpope/vim-rhubarb'
 
 " Reason
 Plug 'reasonml-editor/vim-reason-plus'
-Plug 'tpope/vim-surround'
 
 " Distraction free
 Plug 'junegunn/goyo.vim'
 
 " God pope
+Plug 'tpope/vim-surround'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-projectionist'

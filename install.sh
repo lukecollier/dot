@@ -21,6 +21,7 @@ coursier bootstrap \
   --java-opt -Xms100m \
   org.scalameta:metals_2.12:0.11.2+177-fb896d65-SNAPSHOT -o metals -f
 
+mkdir -p ~/.config/alacritty
 cp -p ./alacritty/alacritty.yml ~/.config/alacritty/alacritty.yml
 cp -p ./neovim/init.vim ~/.config/nvim/init.vim
 cp -p ./zsh/zshrc ~/.zshrc
