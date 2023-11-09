@@ -11,7 +11,10 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
 vim.g.mapleader = "\\"
+
 local opt = vim.opt
 opt.expandtab = true
 opt.tabstop = 2
@@ -24,6 +27,7 @@ opt.sidescrolloff = 3
 opt.cursorline = true
 opt.undodir = vim.fn.expand('~') .. '/.undodir/'
 opt.undofile = true
+opt.autochdir = true
 vim.cmd("syntax on")
 opt.list = true
 opt.listchars = "tab:>-"
@@ -36,6 +40,35 @@ vim.keymap.set("n", "<right>", function() vim.cmd("tabp") end)
 
 require("lazy").setup({
   {
+    {
+      "nvim-telescope/telescope-file-browser.nvim",
+      dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
+      config = function()
+        require("telescope").setup {
+          extensions = {
+            file_browser = {
+              -- disables netrw and use telescope-file-browser in its place
+              hijack_netrw = true,
+              mappings = {
+                ["n"] = {
+                  -- your custom normal mode mappings
+                },
+                ["i"] = {
+                  -- your custom insert mode mappings
+                },
+              },
+            },
+          },
+        }
+        require("telescope").load_extension "file_browser"
+        vim.api.nvim_set_keymap(
+          "n",
+          "<space><space>",
+          ":Telescope file_browser initial_mode=normal<CR>",
+          { noremap = true }
+        )
+      end
+    },
     {
       'tanvirtin/vgit.nvim',
       dependencies = {
@@ -68,13 +101,6 @@ require("lazy").setup({
       vim.o.incsearch = false
       vim.wo.signcolumn = 'yes'
       require('vgit').setup()
-    end
-  },
-  {
-    'mcchrish/nnn.vim',
-    config = function()
-      require("nnn").setup({})
-      vim.keymap.set("n", "<leader>c", function() vim.cmd("NnnPicker") end)
     end
   },
   'nvim-lua/popup.nvim',
@@ -121,6 +147,16 @@ require("lazy").setup({
       vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
       vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
       require('telescope').setup {}
+      -- open when a directory
+      vim.api.nvim_create_autocmd({ "VimEnter" }, {
+        callback = function()
+          local bufname = vim.api.nvim_buf_get_name(0)
+          local stats = vim.loop.fs_stat(bufname)
+          if stats and stats.type == "directory" then
+            require("telescope.builtin").find_files({ search_dirs = { bufname } })
+          end
+        end
+      })
     end
   },
   {
@@ -283,10 +319,15 @@ require("lazy").setup({
 
       lsp_zero.on_attach(function(client, bufnr)
         lsp_zero.default_keymaps({ buffer = bufnr })
+
         lsp_zero.buffer_autoformat()
-        local opts = { buffer = bufnr }
+        local opts = { noremap = true, silent = true, buffer = bufnr }
         vim.keymap.set('n', 'gr', '<cmd>Telescope lsp_references<cr>', opts)
         vim.keymap.set('n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<cr>', opts)
+        vim.keymap.set('n', '<space>e', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
+        vim.keymap.set('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', opts)
+        vim.keymap.set('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', opts)
+        vim.keymap.set('n', '<space>q', '<cmd>lua vim.diagnostic.setloclist()<CR>', opts)
       end)
       require('mason-lspconfig').setup({
         ensure_installed = {},
