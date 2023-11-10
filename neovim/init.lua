@@ -158,7 +158,7 @@ require("lazy").setup({
         if #vim.lsp.get_active_clients() == 1 and vim.lsp.get_active_clients()[1].config then
           opts.cwd = vim.lsp.get_active_clients()[1].config.root_dir
         end
-        builtin.find_files(opts)
+        builtin.live_grep(opts)
       end
 
       vim.keymap.set('n', '<leader>ff', find_files, {})
