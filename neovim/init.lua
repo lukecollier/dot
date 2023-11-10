@@ -35,8 +35,8 @@ opt.termguicolors = true
 
 vim.keymap.set("n", "<up>", function() vim.cmd("tabr") end)
 vim.keymap.set("n", "<down>", function() vim.cmd("tabl") end)
-vim.keymap.set("n", "<left>", function() vim.cmd("tabn") end)
-vim.keymap.set("n", "<right>", function() vim.cmd("tabp") end)
+vim.keymap.set("n", "<right>", function() vim.cmd("tabn") end)
+vim.keymap.set("n", "<left>", function() vim.cmd("tabp") end)
 
 require("lazy").setup({
   {
