@@ -23,7 +23,7 @@ coursier bootstrap \
 
 mkdir -p ~/.config/alacritty
 cp -p ./alacritty/alacritty.yml ~/.config/alacritty/alacritty.yml
-cp -p ./neovim/init.vim ~/.config/nvim/init.vim
+cp -p ./neovim/init.lua ~/.config/nvim/init.lua
 cp -p ./zsh/zshrc ~/.zshrc
 cp -p ./tmux/tmux.conf ~/.tmux.conf
 echo "copying complete"
