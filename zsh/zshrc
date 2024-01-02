@@ -22,10 +22,7 @@ setopt SHARE_HISTORY
 export VISUAL=nvim
 export EDITOR=nvim
 
-# file browser setup
-export NNN_PLUG='o:fzopen;d:diffs;n:notes;'
 
-alias nnn="nnn -E"
 alias ls="exa"
 alias utcdate='date -u +"%Y-%m-%dT%H:%M:%SZ"'
 
@@ -44,3 +41,8 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 # install zoxide
 eval "$(zoxide init zsh)"
 
+autoload -Uz vcs_info
+precmd() { vcs_info }
+zstyle ':vcs_info:git:*' formats '%b '
+setopt PROMPT_SUBST
+PROMPT='%F{green}%*%f %F{reset}%~%f %F{green}${vcs_info_msg_0_}%F{reset}'
