@@ -8,11 +8,15 @@ else
     echo "brew installed skipping"
 fi
 
-if [[ $(uname -m) == 'arm64' ]]; then
-  arch -arm64 brew bundle --file ./Brewfile
-else
-  brew bundle --file ./Brewfile
-fi  
+brew install java
+brew bundle --file ./Brewfile
+
+/opt/homebrew/opt/fzf/install --all
+
+sudo ln -sfn /opt/homebrew/opt/openjdk/libexec/openjdk.jdk \
+     /Library/Java/JavaVirtualMachines/openjdk.jdk
+
+cs setup --yes
 
 coursier bootstrap \
   --java-opt -XX:+UseG1GC \
@@ -22,10 +26,11 @@ coursier bootstrap \
   org.scalameta:metals_2.12:0.11.2+177-fb896d65-SNAPSHOT -o metals -f
 
 mkdir -p ~/.config/alacritty
-cp -p ./alacritty/alacritty.yml ~/.config/alacritty/alacritty.yml
-cp -p ./neovim/init.lua ~/.config/nvim/init.lua
-cp -p ./zsh/zshrc ~/.zshrc
-cp -p ./tmux/tmux.conf ~/.tmux.conf
+mkdir -p ~/.config/nvim
+cp ./alacritty/alacritty.toml ~/.config/alacritty/alacritty.toml
+cp ./neovim/init.lua ~/.config/nvim/init.lua
+cp ./zsh/zshrc ~/.zshrc
+cp ./tmux/tmux.conf ~/.tmux.conf
 echo "copying complete"
 
 sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \

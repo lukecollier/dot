@@ -29,8 +29,6 @@ alias nnn="nnn -E"
 alias ls="exa"
 alias utcdate='date -u +"%Y-%m-%dT%H:%M:%SZ"'
 
-eval "`fnm env`"
-
 # # Feed the output of fd into fzf
 # fd --type f | fzf
 
@@ -46,5 +44,3 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 # install zoxide
 eval "$(zoxide init zsh)"
 
-# terminal prompt
-eval "$(starship init zsh)"
