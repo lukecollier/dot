@@ -45,4 +45,4 @@ autoload -Uz vcs_info
 precmd() { vcs_info }
 zstyle ':vcs_info:git:*' formats '%b '
 setopt PROMPT_SUBST
-PROMPT='%F{yellow}%*%f %F{reset}%~%f %F{green}${vcs_info_msg_0_}%F{reset}'
+PROMPT='%F{yellow}%*%f %F{reset}$(basename $PWD)%f %F{green}${vcs_info_msg_0_}%F{reset}'
