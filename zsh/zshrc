@@ -2,16 +2,9 @@ export PATH=/bin:/usr/bin:/usr/local/bin:${PATH}
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # Vi mode
-bindkey '^P' up-history
-bindkey '^N' down-history
-bindkey '^?' backward-delete-char
-bindkey '^h' backward-delete-char
-bindkey '^w' backward-kill-word
-bindkey '^r' history-incremental-search-backward
-bindkey -v
-export KEYTIMEOUT=1
+source $(brew --prefix)/opt/zsh-vi-mode/share/zsh-vi-mode/zsh-vi-mode.plugin.zsh
 
-# Vi mode
+# History
 HISTFILE=~/.zsh_history
 HISTSIZE=1000000
 SAVEHIST=$HISTSIZE
@@ -21,7 +14,7 @@ setopt SHARE_HISTORY
 
 export VISUAL=nvim
 export EDITOR=nvim
-
+export ZVM_VI_EDITOR=nvim
 
 alias ls="exa"
 alias utcdate='date -u +"%Y-%m-%dT%H:%M:%SZ"'
@@ -46,3 +39,7 @@ precmd() { vcs_info }
 zstyle ':vcs_info:git:*' formats '%b '
 setopt PROMPT_SUBST
 PROMPT='%F{yellow}%*%f %F{reset}$(basename $PWD)%f %F{green}${vcs_info_msg_0_}%F{reset}'
+
+current_branch () {
+  echo $(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
+}

@@ -116,12 +116,12 @@ require("lazy").setup({
     },
     init = function()
       local metals_config = require("metals").bare_config()
-
       metals_config.settings = {
         showImplicitArguments = true,
         showImplicitConversionsAndClasses = true,
         showInferredType = true,
         superMethodLensesEnabled = true,
+        gradleScript = "/Users/lcolli/Projects/work/df-federated-sql/fedsql/gradlew"
       }
       metals_config.init_options.statusBarProvider = "on"
       metals_config.capabilities = require("cmp_nvim_lsp").default_capabilities()
@@ -323,6 +323,10 @@ require("lazy").setup({
     end
   },
   {
+    "github/copilot.vim",
+    tag = 'v1.15.0',
+  },
+  {
     'VonHeikemen/lsp-zero.nvim',
     branch = 'v3.x',
     dependencies = {
@@ -364,4 +368,29 @@ require("lazy").setup({
       require('mason').setup({})
     end
   },
+  {
+    "ThePrimeagen/harpoon",
+    branch = "harpoon2",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    config = function()
+      local harpoon = require("harpoon")
+      -- REQUIRED
+      harpoon:setup()
+      -- REQUIRED
+
+      vim.keymap.set("n", "<leader>a", function() harpoon:list():append() end)
+      vim.keymap.set("n", "<C-e>", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
+
+      -- Toggle a harpoon marked
+
+      vim.keymap.set("n", "<C-h>", function() harpoon:list():select(1) end)
+      vim.keymap.set("n", "<C-t>", function() harpoon:list():select(2) end)
+      vim.keymap.set("n", "<C-n>", function() harpoon:list():select(3) end)
+      vim.keymap.set("n", "<C-s>", function() harpoon:list():select(4) end)
+
+      -- Toggle previous & next buffers stored within Harpoon list
+      vim.keymap.set("n", "<C-S-P>", function() harpoon:list():prev() end)
+      vim.keymap.set("n", "<C-S-N>", function() harpoon:list():next() end)
+    end
+  }
 })
