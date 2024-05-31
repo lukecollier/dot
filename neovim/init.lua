@@ -185,15 +185,18 @@ require("lazy").setup({
       'nvim-telescope/telescope.nvim'
     },
     init = function()
-      local trouble = require("trouble.providers.telescope")
+      local trouble = require("trouble")
       vim.keymap.set("n", "<leader>xx", function() trouble.toggle() end)
       vim.keymap.set("n", "<leader>xw", function() trouble.toggle("workspace_diagnostics") end)
       vim.keymap.set("n", "<leader>xd", function() trouble.toggle("document_diagnostics") end)
       vim.keymap.set("n", "<leader>xq", function() trouble.toggle("quickfix") end)
-      vim.keymap.set("n", "<leader>xl", function() trouble.toggle("loclist") end)
-      vim.keymap.set("n", "gR", function() trouble.toggle("lsp_references") end)
-      local actions = require("telescope.actions")
+      vim.keymap.set("n", "<leader>xll", function() trouble.toggle("loclist") end)
+      vim.keymap.set("n", "<leader>xn", function() trouble.next({ skip_groups = true, jump = true }) end)
+      vim.keymap.set("n", "<leader>xp", function() trouble.previous({ skip_groups = true, jump = true }) end)
+      vim.keymap.set("n", "<leader>xf", function() trouble.first({ skip_groups = true, jump = true }) end)
 
+      vim.keymap.set("n", "gR", function() trouble.toggle("lsp_references") end)
+      local trouble = require("trouble.providers.telescope")
       local telescope = require("telescope")
 
       telescope.setup {
@@ -215,7 +218,7 @@ require("lazy").setup({
         ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "rust" },
 
         -- Install parsers synchronously (only applied to `ensure_installed`)
-        sync_install = false,
+        sync_install = true,
 
         -- Automatically install missing parsers when entering buffer
         -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
@@ -246,12 +249,96 @@ require("lazy").setup({
           additional_vim_regex_highlighting = false,
         },
       }
+      vim.filetype.add({ extension = { wgsl = "wgsl" } })
+
+      local parser_config = require "nvim-treesitter.parsers".get_parser_configs()
+      parser_config.wgsl = {
+        install_info = {
+          url = "https://github.com/szebniok/tree-sitter-wgsl",
+          files = { "src/parser.c" }
+        },
+      }
+
+      require 'nvim-treesitter.configs'.setup {
+        ensure_installed = { "wgsl" },
+        highlight = {
+          enable = true
+        },
+        incremental_selection = {
+          enable = true,
+          keymaps = {
+            init_selection = "gnn",
+            node_incremental = "grn",
+            scope_incremental = "grc",
+            node_decremental = "grm",
+          },
+        },
+      }
     end
   },
   {
     "L3MON4D3/LuaSnip",
     version = "v2.0.0",
-    build = "make install_jsregexp"
+    build = "make install_jsregexp",
+    config = function()
+      local luasnip = require 'luasnip'
+      local s = luasnip.snippet
+      local sn = luasnip.snippet_node
+      local t = luasnip.text_node
+      local i = luasnip.insert_node
+      local f = luasnip.function_node
+      local c = luasnip.choice_node
+      local d = luasnip.dynamic_node
+      local r = luasnip.restore_node
+      local function mimic(args)
+        return args[1]
+      end
+      vim.keymap.set({ "i", "s" }, "<C-L>", function() luasnip.jump(1) end, { silent = true })
+      vim.keymap.set({ "i", "s" }, "<C-H>", function() luasnip.jump(-1) end, { silent = true })
+
+      luasnip.add_snippets("scala", {
+        s("fn", {
+          t({ "", "def " }),
+          i(1),
+          t("("),
+          i(2, "foo"), t({ ": " }), i(3, "Int"),
+          t({ "): " }), i(4, "Int"), t({ "= {", "\t" }),
+          i(0),
+          t({ "", "}" }),
+        }
+        )
+      })
+      luasnip.add_snippets("rust", {
+        s("fn", {
+          t({ "fn " }),
+          i(1),
+          t("("),
+          i(2, "foo: &str"),
+          t({ ") -> " }), i(3, "&str"), t({ " {", "\t" }),
+          i(0),
+          t({ "", "}" }),
+        }),
+        s("test", {
+          t({ "", "\t#[test]" }),
+          t({ "", "\tfn " }), i(1, "example_test"), t({ "() {", "\t" }),
+          i(2),
+          t({ "", "\t\tassert_eq!(" }), i(0), t({ "2 + 2, 4);" }),
+          t({ "", "\t}" }),
+        }),
+        s("cfgtest", {
+          t({ "#[cfg(test)] " }),
+          t({ "", "mod tests {" }),
+          t({ "", "\tuse super::*;" }),
+          t({ "", "\t#[test]" }),
+          t({ "", "\tfn " }), i(1, "example_test"), t({ "() {", "\t" }),
+          i(2),
+          t({ "", "\t\tassert_eq!(" }), i(0), t({ "2 + 2, 4);" }),
+          t({ "", "\t}" }),
+          t({ "", "}" }),
+        })
+      }
+      )
+    end
   },
   {
     'hrsh7th/nvim-cmp',
@@ -262,12 +349,12 @@ require("lazy").setup({
       'hrsh7th/cmp-path',
       'hrsh7th/cmp-cmdline',
       'hrsh7th/nvim-cmp',
+      "github/copilot.vim",
       'saadparwaiz1/cmp_luasnip'
     },
     config = function()
       -- Set up nvim-cmp.
       local cmp = require 'cmp'
-
       cmp.setup({
         snippet = {
           -- REQUIRED - you must specify a snippet engine
@@ -280,17 +367,26 @@ require("lazy").setup({
           documentation = cmp.config.window.bordered(),
         },
         mapping = cmp.mapping.preset.insert({
+          ['<C-g>'] = cmp.mapping(function(fallback)
+            vim.api.nvim_feedkeys(vim.fn['copilot#Accept'](vim.api.nvim_replace_termcodes('<Tab>', true, true, true)),
+              'n', true)
+          end),
           ['<C-b>'] = cmp.mapping.scroll_docs(-4),
           ['<C-f>'] = cmp.mapping.scroll_docs(4),
-          ['<C-Space>'] = cmp.mapping.complete(),
-          ['<C-e>'] = cmp.mapping.abort(),
-          ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+          ["<C-j>"] = cmp.mapping.select_next_item { behavior = cmp.SelectBehavior.Insert },
+          ["<C-k>"] = cmp.mapping.select_prev_item { behavior = cmp.SelectBehavior.Insert },
+          -- ['<C-y>'] = cmp.mapping.complete(),
+          ['<C-n>'] = cmp.mapping.abort(),
+          ['<C-y>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
         }),
         sources = cmp.config.sources({
-          { name = 'nvim_lsp' },
-          { name = 'luasnip' }, -- For luasnip users.
+          { name = "copilot",  group_index = 1 },
+          { name = 'nvim_lsp', group_index = 1 },
+          { name = 'luasnip',  group_index = 1 }, -- For luasnip users.
         }, {
-          { name = 'buffer' },
+          { name = 'buffer', group_index = 2 },
+          { name = 'path',   group_index = 1 },
+          -- { name = 'cmdline', group_index = 2 }
         })
       })
 
@@ -324,7 +420,7 @@ require("lazy").setup({
   },
   {
     "github/copilot.vim",
-    tag = 'v1.15.0',
+    tag = 'v1.24.0',
   },
   {
     'VonHeikemen/lsp-zero.nvim',
@@ -339,6 +435,18 @@ require("lazy").setup({
     },
     config = function()
       local lsp_zero = require('lsp-zero')
+      local lsp_configurations = require('lspconfig.configs')
+      if not lsp_configurations.plunger then
+        lsp_configurations.plunger = {
+          default_config = {
+            name = 'plunger-lsp',
+            cmd = vim.lsp.rpc.connect("127.0.0.1", 8080),
+            filetypes = { 'sql' },
+            root_dir = require('lspconfig.util').root_pattern('.git')
+          }
+        }
+      end
+      require('lspconfig').plunger.setup({})
 
       lsp_zero.on_attach(function(client, bufnr)
         lsp_zero.default_keymaps({ buffer = bufnr })
@@ -371,26 +479,89 @@ require("lazy").setup({
   {
     "ThePrimeagen/harpoon",
     branch = "harpoon2",
-    dependencies = { "nvim-lua/plenary.nvim" },
+    dependencies = { "nvim-lua/plenary.nvim", "nvim-telescope/telescope.nvim" },
     config = function()
       local harpoon = require("harpoon")
       -- REQUIRED
-      harpoon:setup()
-      -- REQUIRED
+      harpoon:setup({
+        -- Setting up custom behavior for a list named "cmd"
+        cmd = {
 
-      vim.keymap.set("n", "<leader>a", function() harpoon:list():append() end)
-      vim.keymap.set("n", "<C-e>", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
+          -- When you call list:append() this function is called and the return
+          -- value will be put in the list at the end.
+          --
+          -- which means same behavior for prepend except where in the list the
+          -- return value is added
+          --
+          -- @param possible_value string only passed in when you alter the ui manual
+          create_list_item = function(possible_value)
+            -- get the current line idx
+            local idx = vim.fn.line(".")
+            local command = "tmux select-window -t 1"
+
+            local handle = assert(io.popen(command), string.format("unable to execute: [%s]", command))
+            local result = handle:read("*a")
+            handle:close()
+
+
+            -- read the current line
+            local cmd = vim.cmd('!tmux select-window -t 1')
+            if cmd == nil then
+              return nil
+            end
+
+            return {
+              value = result,
+              context = {},
+            }
+          end,
+
+          --- This function gets invoked with the options being passed in from
+          --- list:select(index, <...options...>)
+          --- @param list_item {value: any, context: any}
+          --- @param list { ... }
+          --- @param option any
+          select = function(list_item, list, option)
+            -- WOAH, IS THIS HTMX LEVEL XSS ATTACK??
+            vim.cmd(list_item.value)
+          end
+
+        }
+      })
+
+      vim.keymap.set("n", "<leader>a", function() harpoon:list("cmd"):append() end)
 
       -- Toggle a harpoon marked
 
-      vim.keymap.set("n", "<C-h>", function() harpoon:list():select(1) end)
-      vim.keymap.set("n", "<C-t>", function() harpoon:list():select(2) end)
-      vim.keymap.set("n", "<C-n>", function() harpoon:list():select(3) end)
-      vim.keymap.set("n", "<C-s>", function() harpoon:list():select(4) end)
+      vim.keymap.set("n", "<C-h>", function() harpoon:list():select(0) end)
+      vim.keymap.set("n", "<C-t>", function() harpoon:list():select(1) end)
+      vim.keymap.set("n", "<C-n>", function() harpoon:list():select(2) end)
+      vim.keymap.set("n", "<C-s>", function() harpoon:list():select(3) end)
 
       -- Toggle previous & next buffers stored within Harpoon list
       vim.keymap.set("n", "<C-S-P>", function() harpoon:list():prev() end)
       vim.keymap.set("n", "<C-S-N>", function() harpoon:list():next() end)
+
+      -- basic telescope configuration
+      local conf = require("telescope.config").values
+      local function toggle_telescope(harpoon_files)
+        local file_paths = {}
+        for _, item in ipairs(harpoon_files.items) do
+          table.insert(file_paths, item.value)
+        end
+
+        require("telescope.pickers").new({}, {
+          prompt_title = "Harpoon",
+          finder = require("telescope.finders").new_table({
+            results = file_paths,
+          }),
+          previewer = conf.file_previewer({}),
+          sorter = conf.generic_sorter({}),
+        }):find()
+      end
+
+      vim.keymap.set("n", "<C-e>", function() toggle_telescope(harpoon:list("cmd")) end,
+        { desc = "Open harpoon window" })
     end
   }
 })
