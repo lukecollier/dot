@@ -7,7 +7,8 @@ if status is-interactive
     eval (/opt/homebrew/bin/brew shellenv)
     zoxide init fish | source
     set -gx PATH "$HOME/.cargo/bin" $PATH;
-    fzf_key_bindings
+    set -fx PATH "$(go env GOPATH)/bin" $PATH;
+    fish_user_key_bindings
     alias g "git"
 end
 
@@ -34,13 +35,14 @@ function fish_mode_prompt
 end
 
 
+
+
+
 # >>> JVM installed by coursier >>>
-set -gx JAVA_HOME "/Users/lcolli/Library/Caches/Coursier/arc/https/github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.22%252B7/OpenJDK11U-jdk_x64_mac_hotspot_11.0.22_7.tar.gz/jdk-11.0.22+7/Contents/Home"
+set -gx JAVA_HOME "/Users/lukecollier/Library/Caches/Coursier/arc/https/github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.9%252B10/OpenJDK21U-jdk_x64_mac_hotspot_21.0.9_10.tar.gz/jdk-21.0.9+10/Contents/Home"
 # <<< JVM installed by coursier <<<
 
-# >>> coursier install directory >>>
-set -gx PATH "$PATH:/Users/lcolli/Library/Application Support/Coursier/bin"
-# <<< coursier install directory <<<
 
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/lcolli/Projects/work/google-cloud-sdk 2/path.fish.inc' ]; . '/Users/lcolli/Projects/work/google-cloud-sdk 2/path.fish.inc'; end
+# >>> coursier install directory >>>
+set -gx PATH "$PATH:/Users/lukecollier/Library/Application Support/Coursier/bin"
+# <<< coursier install directory <<<
